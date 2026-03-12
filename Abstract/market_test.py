@@ -1,12 +1,8 @@
-from math import dist
 import numpy as np
 import pandas as pd
-from plotly import data
 import plotly.express as px
 import plotly.graph_objects as go
 from scipy import stats
-import statsmodels.api as sm
-import matplotlib.pyplot as plt
 import yfinance as yf
 
 def overall_analysis(ticker_symbol, start_date, end_date, return_column, buy_price, days, simulations, line_color, hist_color):
@@ -17,9 +13,6 @@ def overall_analysis(ticker_symbol, start_date, end_date, return_column, buy_pri
     plot_line_fit(df, ticker_symbol)
     params, best_dist = get_stock_dna(df, aic_test, 0.05)
     predict_by_input(buy_price, best_dist, params, days, simulations, ticker_symbol, line_color, hist_color)
-
-
-
 
 """
 I suggest putting start date one day before you're actual desired start date
@@ -194,7 +187,7 @@ def predict_by_input(buy_price, best_dist, params, days, simulations, ticker_sym
     positiveCount = np.sum(final_prices >= buy_price)
     negativeCount = simulations - positiveCount
     
-    print(f"\n--- {ticker_symbol} Monte Carlo Results ---")
+    print(f"\n{ticker_symbol} Monte Carlo Results")
     print(f"Prob. of positive or neutral return: {round(positiveCount/simulations, 3)}")
     print(f"Prob. of negative return: {round(negativeCount/simulations, 3)}")
     return final_prices
