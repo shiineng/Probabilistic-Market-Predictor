@@ -152,3 +152,60 @@ def predictEnd2026(currentPrice, a, b, loc, scale, days=252, simulations=10000):
 
 
     return pricePaths[-1]  # Return the final prices at the end of the simulation
+
+def predictByDay2026(currentPrice, a, b, loc, scale, days, simulations=10000):    
+    simReturns = stats.johnsonsu.rvs(a, b, loc, scale, size=(days, simulations))
+    priceMultipliers = 1 + (simReturns / 100)
+    pricePaths = currentPrice * priceMultipliers.cumprod(axis=0)
+    
+    fig = go.Figure()
+
+    for i in range(min(simulations, 100)):
+        fig.add_trace(go.Scatter(
+            x=list(range(days)),
+            y=pricePaths[:, i], 
+            mode='lines', 
+        line=dict(width=1, color='blue'),
+        showlegend=False
+    ))
+        
+    fig.add_hline(
+    y=currentPrice, 
+    line_dash="dash", 
+    line_color="red", 
+    annotation_text="Starting Price", 
+    annotation_position="bottom right"
+    )
+
+    fig.update_layout(
+    title="Monte Carlo: 100 Potential Paths",
+    xaxis_title="Days",
+    yaxis_title="Price ($)",
+    template="plotly_dark",
+    hovermode="x"
+    )
+
+    fig.update_xaxes(range=[0, days])
+
+    fig.show()
+    final_prices = pricePaths[-1]
+    hist_fig = px.histogram(
+        final_prices, 
+        nbins=50, 
+        title="Distribution of Predicted Ending Prices",
+        labels={'value': 'Final Price ($)'},
+        template="plotly_dark"
+    )
+    hist_fig.show()
+
+    positiveCount = 0
+    negativeCount = 0
+
+    for price in pricePaths[0]:
+        if price >= currentPrice:
+            positiveCount += 1
+        else:
+            negativeCount += 1
+    
+    print(f"Proportion of positive or neutral return: {round(positiveCount/simulations, 3)}\nProportion of negative return: {round(negativeCount/simulations,3)}")
+    return pricePaths[-1]  # Return the final prices at the end of the simulation
