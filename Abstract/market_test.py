@@ -22,6 +22,7 @@ def get_stock(ticker_symbol, start_date, end_date, return_column):
     ticker = yf.Ticker(ticker_symbol)
     df = ticker.history(start = start_date, end = end_date)
     df = df.reset_index()
+    df["Date"] = pd.to_datetime(df["Date"], utc=True)
     df["Date"] = df["Date"].dt.strftime("%Y-%m-%d") # Converts date to string
     df["Year-Month"] = df["Date"].str.split(" ").str[0].str[0:7] # New column of YYYY-MM to use for monthly averages
 
