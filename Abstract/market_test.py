@@ -5,8 +5,11 @@ import plotly.graph_objects as go
 from scipy import stats
 import yfinance as yf
 
-def overall_analysis(ticker_symbol, start_date, end_date, return_column, buy_price, days, simulations, line_color, hist_color):
+def overall_analysis(ticker_symbol, start_date, end_date, return_column, days, simulations, line_color, hist_color, buy_price):
     df = get_stock(ticker_symbol, start_date, end_date, return_column)
+    if buy_price is None:
+        buy_price = df[return_column].iloc[-1]
+        print(f"Starting Monte Carlo at most recent known price ({end_date}): ${buy_price:.2f}")
     aic_test = model_quality(df)
     print(f"AIC TEST:\n{aic_test}")
     # print(f"BIC TEST: \n {bic_test}")
